@@ -29,6 +29,7 @@
 # include "stdio.h"
 # include "string.h"
 
+void sendPacket(void);
 void ADC0Init(void);						
 void UARTInit(void);
 void SendString(void);									// Used to send strings to the UART
@@ -46,12 +47,10 @@ unsigned char szTemp[64] = "";					// Used to store ADC0 result before printing 
 unsigned char ucTxBufferEmpty  = 0;				// Used to indicate that the UART Tx buffer is empty
 unsigned char newADCdata;          				// Used to indicate that new ADC data is available
 unsigned char ucWaitForUart = 0;				// Used to check that user has indicated that correct voltage was set 
-volatile long lADC0_Thermocouple = 0;			// Variable that ADC0DAT is read into, this is the ADC0 reading of the thermocouple
+volatile long A2data = 0;			// Variable that ADC0DAT is read into when reading from Analog Input 2
 volatile unsigned long ulADC0_RTD = 0;			// Variable that ADC0DAT is read into, this is the ADC0 reading of the RTD
 unsigned char ucADCInput;						// Used to indicate what channel the ADC0 is sampling
 
-float fVThermocouple;					// fVRTD = RTD voltage, fVThermocouple = Thermocouple voltage
-float fVoltsBi, fVoltsUni;
 unsigned char i = 0;
 unsigned char nLen = 0;
 signed int j = 0;
@@ -65,42 +64,40 @@ int main(void)
 	POWKEY1 = 0x1;
 	POWCON0 = 0x78;		   				// Set core to max CPU speed of 10.24Mhz
 	POWKEY2 = 0xF4;
-//	IEXCON = 0x42; 						// Enable Excitation Current Source 0 - 200uA
-//	DACCON = 0x10;						// Enable DAC with internal reference
-//	DACDAT = ((0xB55)<< 16);			// Set DAC to 850 mV which is used bias negative input of thermocouple
 	UARTInit();							// Init UART
 	ADC0Init();							// Init ADC0
 	IRQEN = BIT11 + BIT10;						// Enable UART interrupt (BIT11) and ADC0 interrupt (BIT10)
 	
-	// uADC0CONRtd = 0x8415;				// Gain = 32, Unipolar, enable ADC0, Ext ref, ADC0/1 differential
-	// uADC0CONThermocouple = 0x8145;		// Gain = 32, Bipolar, enable ADC0, Int ref, ADC2/3 differential
 	// bit 15 = ADC ON, 14:13 current source 00, 12 HIGHEXTREF, 11 AMP_CM, 10 unipolar, 9:6 input select,
 	// bit 5:4 reference select, 3:0 PGA gain select 0000=gain of 1.  page 45 of PDF
 	// ADC0CON = 0x8540 ;	//  ADC on, ADC2/ADC3 (differential mode), Int ref, gain = 1
 	ADC0CON = BIT15 + BIT10 + BIT8 + BIT7 + BIT4 + BIT5;	//  ADC on, ADC2/ADC3 (differential mode), Vdd/2 ref, gain = 1
 	ADCMDE  = 0x81;								// ADCMDE bit 7 = fullpower, bits 2:0 = 001 continous conversion mode
 	
-	fVoltsUni = 1.2 / 16777216;		// Volts per ADC unit in Unipolar mode
-	fVoltsBi = 2.4 / 16777216;		// Volts per ADC unit in Biipolar mode
-
 	while (1)
 	{
 	   	if (newADCdata == 1) 			// if new ADC data is available
 	   	{
-				fVThermocouple = lADC0_Thermocouple * fVoltsUni;
 				newADCdata = 0;								// Indicate that data has been read
-//			sprintf ( (char*)szTemp, "Voltage : \t%+8.6ffV \r\n",fVThermocouple );// Send the ADC0 Result to the UART                          
-//				sprintf ( (char*)szTemp, "%+8.6fV \r\n",fVThermocouple );
-				sprintf((char*)szTemp, "%07.7LX\r\n",lADC0_Thermocouple );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
-				nLen = strlen((char*)szTemp);
-     		if (nLen <64)	SendString();
-//				sprintf((char*)szTemp, "123456r\n");
+//				sprintf((char*)szTemp, "%07.7LX\r\n",A2data );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
 //				nLen = strlen((char*)szTemp);
 //     		if (nLen <64)	SendString();
+				sendPacket();  // send three-byte A2data packet via serial
 				delay(100000);
    		}
 	}
 }
+
+void sendPacket()
+{
+				sendChar(0x80 | (A2data >> 17));  // send 128 plus MS7B
+				sendChar((A2data >> 10) & 0x7F);  // send next 7 bits
+				sendChar((A2data >> 3) & 0x7F);		// send next 7 bits (3 thrown away)
+//     12345678 12345678 12345678  entire 24 bit ADC return
+//		 -------- -------- -1234567  shifted right 17 bits
+//     -------- --123456 78123456  shifted right 10 bits
+//		 ---12345 67812345 67812345  shifted right 3 bits			
+}	
 
 void ADC0Init()
 {
@@ -176,7 +173,7 @@ void IRQ_Handler(void) __irq
 
 	if ((IRQSTATUS & BIT10) == BIT10)		//If ADC0 interrupt source
 		{
-		lADC0_Thermocouple = ADC0DAT;	// Read ADC0 conversion result
+		A2data = ADC0DAT;	// Read ADC0 conversion result
 		newADCdata = 1;
   	}
 	}
