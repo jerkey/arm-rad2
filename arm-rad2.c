@@ -34,47 +34,47 @@
 void sendPacket(void);
 void ADC0Init(void);						
 void UARTInit(void);
-void SendString(void);									// Used to send strings to the UART
-void delay(int);												// Simple delay
-void SystemZeroCalibration(void);				// Calibrate using external inputs
+void SendString(void);                  // Used to send strings to the UART
+void delay(int);                        // Simple delay
+void SystemZeroCalibration(void);       // Calibrate using external inputs
 void SystemFullCalibration(void);
-void fillBuf(void);  // send a byte if there's one to send
-void sendChar(char toSend);  // put a character into send buffer
+void fillBuf(void);                     // send a byte if there's one to send
+void sendChar(char toSend);             // put a character into send buffer
 
 
 // global variable declarations....
-volatile unsigned char ucComRx = 0;				// variable that ComRx is read into in UART IRQ
-volatile unsigned char bSendResultToUART = 0;	// Flag used to indicate ADC0 resutl ready to send to UART	
-unsigned char szTemp[64] = "";					// Used to store ADC0 result before printing to UART
-unsigned char ucTxBufferEmpty  = 0;				// Used to indicate that the UART Tx buffer is empty
-unsigned char newADCdata;          				// Used to indicate that new ADC data is available
-unsigned char ucWaitForUart = 0;				// Used to check that user has indicated that correct voltage was set 
-volatile long A2data = 0;			// Variable that ADC0DAT is read into when reading from Analog Input 2
-volatile unsigned long ulADC0_RTD = 0;			// Variable that ADC0DAT is read into, this is the ADC0 reading of the RTD
-unsigned char ucADCInput;						// Used to indicate what channel the ADC0 is sampling
+volatile unsigned char ucComRx = 0;            // variable that ComRx is read into in UART IRQ
+volatile unsigned char bSendResultToUART = 0;  // Flag used to indicate ADC0 resutl ready to send to UART
+unsigned char szTemp[64] = "";                 // Used to store ADC0 result before printing to UART
+unsigned char ucTxBufferEmpty  = 0;            // Used to indicate that the UART Tx buffer is empty
+unsigned char newADCdata;                      // Used to indicate that new ADC data is available
+unsigned char ucWaitForUart = 0;               // Used to check that user has indicated that correct voltage was set
+volatile long A2data = 0;                      // Variable that ADC0DAT is read into when reading from Analog Input 2
+volatile unsigned long ulADC0_RTD = 0;         // Variable that ADC0DAT is read into, this is the ADC0 reading of the RTD
+unsigned char ucADCInput;                      // Used to indicate what channel the ADC0 is sampling
 
 unsigned char i = 0;
 unsigned char nLen = 0;
 signed int j = 0;
 unsigned char sendBuf[512];  // serial output buffer
 const int sendBufSize = 512; // serial output buffer size (for wrapping)
-int sendBufIndex = 0;				 // serial output buffer index used by sendChar
-int sendBufUartIndex = 0;	   // serial output buffer index used by UART IRQ handler
+int sendBufIndex = 0;        // serial output buffer index used by sendChar
+int sendBufUartIndex = 0;    // serial output buffer index used by UART IRQ handler
 
 int main(void)
 {		
 	POWKEY1 = 0x1;
-	POWCON0 = 0x78;		   				// Set core to max CPU speed of 10.24Mhz
+	POWCON0 = 0x78;          // Set core to max CPU speed of 10.24Mhz
 	POWKEY2 = 0xF4;
-	UARTInit();							// Init UART
-	ADC0Init();							// Init ADC0
-	IRQEN = BIT11 + BIT10;						// Enable UART interrupt (BIT11) and ADC0 interrupt (BIT10)
+	UARTInit();              // Init UART
+	ADC0Init();              // Init ADC0
+	IRQEN = BIT11 + BIT10;   // Enable UART interrupt (BIT11) and ADC0 interrupt (BIT10)
 	
 	// bit 15 = ADC ON, 14:13 current source 00, 12 HIGHEXTREF, 11 AMP_CM, 10 unipolar, 9:6 input select,
 	// bit 5:4 reference select, 3:0 PGA gain select 0000=gain of 1.  page 45 of PDF
-	// ADC0CON = 0x8540 ;	//  ADC on, ADC2/ADC3 (differential mode), Int ref, gain = 1
-	ADC0CON = BIT15 + BIT10 + BIT8 + BIT6 + BIT4 + BIT5;	//  ADC on, ADC2/ADC3 (differential mode), Vdd/2 ref, gain = 1
-	ADCMDE  = 0x81;								// ADCMDE bit 7 = fullpower, bits 2:0 = 001 continous conversion mode
+	// ADC0CON = 0x8540 ;    //  ADC on, ADC2/ADC3 (differential mode), Int ref, gain = 1
+	ADC0CON = BIT15 + BIT10 + BIT8 + BIT6 + BIT4 + BIT5;  //  ADC on, ADC2/ADC3 (differential mode), Vdd/2 ref, gain = 1
+	ADCMDE  = 0x81;          // ADCMDE bit 7 = fullpower, bits 2:0 = 001 continous conversion mode
 	
 	GP0DAT |= BIT28;  // MAKE P0.4 AN OUTPUT (page 102)
 	GP0DAT |= BIT20;  // turn on P0.4 (pin 25) Note that this pin is inverted
