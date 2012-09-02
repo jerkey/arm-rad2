@@ -104,7 +104,7 @@ void ADC0Init()
 	ADCMSKI = BIT0;						// Enable ADC0 result ready interrupt source
   // ADCFLT = 0xFF1F;					// Chop on, Averaging, AF=63, SF=31, 4Hz					
 //	ADCFLT = BIT14;  // Bit 14 = RAVG2 running average /2, sample rate = 8kHz
-	ADCFLT = 7;  //		Sinc3 factor of 64, chop off, ravg2 off
+	ADCFLT = 43;  //		Sinc3 factor of 64, chop off, ravg2 off
 	
 	ADCORCR = 3;
  	ADCCFG = 0;
