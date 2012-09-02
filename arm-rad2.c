@@ -1,7 +1,7 @@
 /************************************************************************************************
- This file expects a voltage between 0 and 1.20V to be connected differentially to AIN3/AIN2.
-				 This file will measure the voltage between AIN3 (pin 8) as - and AIN2 (pin 9) as +
-				 and send the measured voltage to the UART (115200 baud).
+ This program expects a voltage between 0 and 1.20V to be connected differentially to AIN3/AIN2.
+ It will measure the voltage between AIN3 (pin 8) as - and AIN2 (pin 9) as + and send the
+ measured voltage to the UART (115200 baud).
 *************************************************************************************************/
 // Bit Definitions
 #define BIT0  0x01
