@@ -81,15 +81,18 @@ int main(void)
 
 	while (1)
 	{
-	   	if (newADCdata == 1) 			// if new ADC data is available
-	   	{
-				newADCdata = 0;								// Indicate that data has been read
-//				sprintf((char*)szTemp, "%07.7LX\r\n",A2data );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
-//				nLen = strlen((char*)szTemp);
-//     		if (nLen <64)	SendString();
+		if (newADCdata == 1) // if new ADC data is available
+		{
+#if 0
+				newADCdata = 0;  // Indicate that data has been read
+				sprintf((char*)szTemp, "%07.7LX\r\n",A2data );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
+				nLen = strlen((char*)szTemp);
+				if (nLen <64)	SendString();
+#else
 				sendPacket();  // send three-byte A2data packet via serial
+#endif
 				delay(100000);
-   		}
+		}
 	}
 }
 
