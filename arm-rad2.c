@@ -21,8 +21,10 @@
 #define BIT14 0x4000
 #define BIT15 0x8000
 #define BIT16 0x10000
+#define BIT20 0x100000
 #define BIT22 0x400000
 #define BIT24 0x1000000
+#define BIT28 0x10000000
 #define BIT30 0x40000000
 
 #include<aduc7060.h>
@@ -74,6 +76,9 @@ int main(void)
 	ADC0CON = BIT15 + BIT10 + BIT8 + BIT6 + BIT4 + BIT5;	//  ADC on, ADC2/ADC3 (differential mode), Vdd/2 ref, gain = 1
 	ADCMDE  = 0x81;								// ADCMDE bit 7 = fullpower, bits 2:0 = 001 continous conversion mode
 	
+	GP0DAT |= BIT28;  // MAKE P0.4 AN OUTPUT (page 102)
+	GP0DAT |= BIT20;  // turn on P0.4 (pin 25) Note that this pin is inverted
+
 	while (1)
 	{
 	   	if (newADCdata == 1) 			// if new ADC data is available
@@ -86,6 +91,12 @@ int main(void)
 				delay(100000);
    		}
 	}
+}
+
+void clearCapacitor(int duration) {
+	GP0DAT ^= BIT20;  // toggle off P0.4 (pin 25)
+	delay(duration);
+	GP0DAT |= BIT20;  // turn on P0.4 (pin 25)
 }
 
 void sendPacket()
