@@ -31,7 +31,8 @@
 # include "stdio.h"
 # include "string.h"
 
-void sendPacket(void);
+void clearCapacitor(int duration);
+void sendPacket(long whattosend);
 void ADC0Init(void);						
 void UARTInit(void);
 void SendString(void);                  // Used to send strings to the UART
@@ -61,6 +62,8 @@ const int sendBufSize = 512; // serial output buffer size (for wrapping)
 int sendBufIndex = 0;        // serial output buffer index used by sendChar
 int sendBufUartIndex = 0;    // serial output buffer index used by UART IRQ handler
 
+unsigned long threshold = 0x80000;  // ADC value above which indicates an event to record
+
 int main(void)
 {		
 	POWKEY1 = 0x1;
@@ -81,20 +84,22 @@ int main(void)
 
 	while (1)
 	{
-		if (newADCdata == 1) // if new ADC data is available
-		{
-#if 0
-				newADCdata = 0;  // Indicate that data has been read
-				sprintf((char*)szTemp, "%07.7LX\r\n",A2data );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
-				nLen = strlen((char*)szTemp);
-				if (nLen <64)	SendString();
+		A2data = ADC0DAT;	// Read ADC0 instant approximation
+		if (A2data >= threshold) {
+			while (newADCdata == 0); // wait until new ADC data is available
+			newADCdata = 0;  // Indicate that data has been read
+#if 1
+			sprintf((char*)szTemp, "%07.7LX\r\n",A2data );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
+			nLen = strlen((char*)szTemp);
+			if (nLen <64)	SendString();
 #else
-				sendPacket();  // send three-byte A2data packet via serial
+			sendPacket(A2data);  // send three-byte A2data packet via serial
 #endif
-				delay(100000);
-		}
-	}
-}
+			clearCapacitor(1000);  // clear capacitor for (duration) counts and return
+			} // if (A2data >= threshold)
+		}  // while (1)
+	} // main(void)
+
 
 void clearCapacitor(int duration) {
 	GP0DAT ^= BIT20;  // toggle off P0.4 (pin 25)
@@ -102,11 +107,11 @@ void clearCapacitor(int duration) {
 	GP0DAT |= BIT20;  // turn on P0.4 (pin 25)
 }
 
-void sendPacket()
+void sendPacket(long whattosend)
 {
-				sendChar(0x80 | (A2data >> 17));  // send 128 plus MS7B
-				sendChar((A2data >> 10) & 0x7F);  // send next 7 bits
-				sendChar((A2data >> 3) & 0x7F);		// send next 7 bits (3 thrown away)
+				sendChar(0x80 | (whattosend >> 17));  // send 128 plus MS7B
+				sendChar((whattosend >> 10) & 0x7F);  // send next 7 bits
+				sendChar((whattosend >> 3) & 0x7F);		// send next 7 bits (3 thrown away)
 //     12345678 12345678 12345678  entire 24 bit ADC return
 //		 -------- -------- -1234567  shifted right 17 bits
 //     -------- --123456 78123456  shifted right 10 bits
