@@ -86,16 +86,18 @@ int main(void)
 	{
 		A2data = ADC0DAT;	// Read ADC0 instant approximation
 		if (A2data >= threshold) {
+			clearCapacitor(100000);  // TESTING			
 			while (newADCdata == 0); // wait until new ADC data is available
 			newADCdata = 0;  // Indicate that data has been read
 #if 1
-			sprintf((char*)szTemp, "%07.7LX\r\n",A2data );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
+			sprintf((char*)szTemp, "f%07.7LX\r\n",A2data );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
 			nLen = strlen((char*)szTemp);
 			if (nLen <64)	SendString();
 #else
 			sendPacket(A2data);  // send three-byte A2data packet via serial
 #endif
-			clearCapacitor(1000);  // clear capacitor for (duration) counts and return
+//			clearCapacitor(10000);  // clear capacitor for (duration) counts and return
+		  while (newADCdata == 0);		// wait for ADC to go back down
 			} // if (A2data >= threshold)
 		}  // while (1)
 	} // main(void)
