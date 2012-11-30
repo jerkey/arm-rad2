@@ -33,6 +33,7 @@
 
 void clearCapacitor(int duration);
 void sendPacket(long whattosend);
+void sendText(long whattosend);
 void ADC0Init(void);						
 void UARTInit(void);
 void SendString(void);                  // Used to send strings to the UART
@@ -62,8 +63,9 @@ const int sendBufSize = 512; // serial output buffer size (for wrapping)
 int sendBufIndex = 0;        // serial output buffer index used by sendChar
 int sendBufUartIndex = 0;    // serial output buffer index used by UART IRQ handler
 
-unsigned long threshold = 0x1F0000;  // ADC value above which indicates an event to record
-int capacitorDuration = 50000;  // duration to clear capacitor (empirically 50000)
+unsigned long threshold = 0x185000;  // ADC value above which indicates an event to record
+// 0x1F0000 threshold corresponds to 154.6 millivolts at ADC input
+int capacitorDuration = 1000;  // duration to clear capacitor (empirically 50000)
 // 50000 duration corresponds to 53 milliseconds
 
 int main(void)
@@ -82,22 +84,21 @@ int main(void)
 	ADCMDE  = 0x81;          // ADCMDE bit 7 = fullpower, bits 2:0 = 001 continous conversion mode
 	
 	GP0DAT |= BIT28;  // MAKE P0.4 AN OUTPUT (page 102)
-	GP0DAT |= BIT20;  // turn on P0.4 (pin 25) Note that this pin is inverted
+	// GP0DAT |= BIT20;  // turn on P0.4 (pin 25) Note that this pin is inverted
+	GP0DAT &= 0xFFEFFFFF;  // turn OFF BIT20 P0.4 (pin 25)
 
 	while (1)
 	{
-//		A2data = ADC0DAT;	// Read ADC0 instant approximation
-		while (newADCdata == 0); // wait until new ADC data is available		
-		newADCdata = 0;  // Indicate that data has been read
+		A2data = ADC0DAT;	// Read ADC0 instant approximation
+//		while (newADCdata == 0); // wait until new ADC data is available		
+//		newADCdata = 0;  // Indicate that data has been read
 		if (A2data >= threshold) {
 //			clearCapacitor(capacitorDuration);  // FOR TESTING			
 //			delay(400000);  // FOR TESTING
-//			while (newADCdata == 0); // wait until new ADC data is available
-//			newADCdata = 0;  // Indicate that data has been read
-/*			sprintf((char*)szTemp, "x%07.7LX\r\n",A2data );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
-			nLen = strlen((char*)szTemp);
-			if (nLen <64)	SendString();
-*/
+			while (newADCdata == 0); // wait until new ADC data is available
+			newADCdata = 0;  // Indicate that data has been read
+
+//			sendText(A2data);  // send data in text hexadecimal format via serials
 			sendPacket(A2data);  // send three-byte A2data packet via serial
 			clearCapacitor(capacitorDuration);  // clear capacitor for (duration) counts and return
 //		  while (newADCdata == 0);		// wait for ADC to go back down
@@ -107,9 +108,10 @@ int main(void)
 
 
 void clearCapacitor(int duration) {
-	GP0DAT ^= BIT20;  // toggle off P0.4 (pin 25)
-	delay(duration);
 	GP0DAT |= BIT20;  // turn on P0.4 (pin 25)
+	delay(duration);
+	GP0DAT &= 0xFFEFFFFF;  // turn OFF BIT20 P0.4 (pin 25)	
+//	GP0DAT ^= BIT20;  // toggle off P0.4 (pin 25)
 }
 
 void sendPacket(long whattosend)
@@ -122,6 +124,14 @@ void sendPacket(long whattosend)
 //     -------- --123456 78123456  shifted right 10 bits
 //		 ---12345 67812345 67812345  shifted right 3 bits			
 }	
+
+void sendText(long whattosend)
+{
+			sprintf((char*)szTemp, "x%07.7LX\r\n",whattosend );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
+			nLen = strlen((char*)szTemp);
+			if (nLen <64)	for ( i = 0 ; i < nLen ; i++ ) sendChar(szTemp[i]);;
+      delay(1000); // breather
+}
 
 void ADC0Init()
 {
