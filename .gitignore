@@ -14,7 +14,6 @@
 *.plg
 *.tra
 *.dep
-*.hex
 *.uvgui* 
 *uvopt*
 *.__i
