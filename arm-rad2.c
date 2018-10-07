@@ -65,7 +65,7 @@ int sendBufUartIndex = 0;    // serial output buffer index used by UART IRQ hand
 
 unsigned long threshold = 0x185000;  // ADC value above which indicates an event to record
 // 0x1F0000 threshold corresponds to 154.6 millivolts at ADC input
-int capacitorDuration = 1000;  // duration to clear capacitor (empirically 50000)
+int capacitorDuration = 5000;  // duration to clear capacitor (empirically 50000)
 // 50000 duration corresponds to 53 milliseconds
 
 int main(void)
