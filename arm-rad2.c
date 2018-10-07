@@ -27,7 +27,7 @@
 #define BIT28 0x10000000
 #define BIT30 0x40000000
 
-#include<aduc7060.h>
+#include "ADuC7061.h"
 # include "stdio.h"
 # include "string.h"
 
@@ -189,7 +189,7 @@ void fillBuf() {  // send a byte if there's one to send
 				COMTX = sendBuf[sendBufUartIndex++];  // send the next char and ++ the index
 				sendBufUartIndex %= sendBufSize; // wrap buffer index if needed
 }
-void IRQ_Handler(void) __irq
+void IRQ_Handler(void) //__irq
 {
 	volatile unsigned long IRQSTATUS = IRQSTA;	   					// Read off IRQSTA register
 	if ((IRQSTATUS & BIT11) == BIT11)		//UART interrupt source

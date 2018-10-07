@@ -1,0 +1,38 @@
+$ arm-none-eabi-gcc -v arm-rad2.c -mcpu=arm7tdmi
+Using built-in specs.
+COLLECT_GCC=arm-none-eabi-gcc
+COLLECT_LTO_WRAPPER=/usr/lib/gcc/arm-none-eabi/4.9.3/lto-wrapper
+Target: arm-none-eabi
+Configured with: ../src/configure --build=x86_64-linux-gnu --prefix=/usr --includedir='/usr/lib/include' --mandir='/usr/lib/share/man' --infodir='/usr/lib/share/info' --sysconfdir=/etc --localstatedir=/var --disable-silent-rules --libdir='/usr/lib/lib/x86_64-linux-gnu' --libexecdir='/usr/lib/lib/x86_64-linux-gnu' --disable-maintainer-mode --disable-dependency-tracking --mandir=/usr/share/man --enable-languages=c,c++,lto --enable-multilib --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --build=x86_64-linux-gnu --target=arm-none-eabi --with-system-zlib --with-gnu-as --with-gnu-ld --with-pkgversion=15:4.9.3+svn231177-1 --without-included-gettext --prefix=/usr/lib --infodir=/usr/share/doc/gcc-arm-none-eabi/info --htmldir=/usr/share/doc/gcc-arm-none-eabi/html --pdfdir=/usr/share/doc/gcc-arm-none-eabi/pdf --bindir=/usr/bin --libexecdir=/usr/lib --libdir=/usr/lib --disable-libstdc++-v3 --host=x86_64-linux-gnu --with-headers=no --without-newlib --with-multilib-list=armv6-m,armv7-m,armv7e-m,armv7-r CFLAGS='-g -O2 -fstack-protector-strong' CPPFLAGS=-D_FORTIFY_SOURCE=2 CXXFLAGS='-g -O2 -fstack-protector-strong' FCFLAGS='-g -O2 -fstack-protector-strong' FFLAGS='-g -O2 -fstack-protector-strong' GCJFLAGS='-g -O2 -fstack-protector-strong' LDFLAGS='-Wl,-Bsymbolic-functions -Wl,-z,relro' OBJCFLAGS='-g -O2 -fstack-protector-strong' OBJCXXFLAGS='-g -O2 -fstack-protector-strong' INHIBIT_LIBC_CFLAGS=-DUSE_TM_CLONE_REGISTRY=0 AR_FOR_TARGET=arm-none-eabi-ar AS_FOR_TARGET=arm-none-eabi-as LD_FOR_TARGET=arm-none-eabi-ld NM_FOR_TARGET=arm-none-eabi-nm OBJDUMP_FOR_TARGET=arm-none-eabi-objdump RANLIB_FOR_TARGET=arm-none-eabi-ranlib READELF_FOR_TARGET=arm-none-eabi-readelf STRIP_FOR_TARGET=arm-none-eabi-strip
+Thread model: single
+gcc version 4.9.3 20150529 (prerelease) (15:4.9.3+svn231177-1) 
+COLLECT_GCC_OPTIONS='-v' '-mcpu=arm7tdmi'
+ /usr/lib/gcc/arm-none-eabi/4.9.3/cc1 -quiet -v -D__USES_INITFINI__ arm-rad2.c -quiet -dumpbase arm-rad2.c -mcpu=arm7tdmi -auxbase arm-rad2 -version -o /tmp/ccjKdlfM.s
+GNU C (15:4.9.3+svn231177-1) version 4.9.3 20150529 (prerelease) (arm-none-eabi)
+	compiled by GNU C version 5.2.1 20151129, GMP version 6.1.0, MPFR version 3.1.3, MPC version 1.0.3
+warning: MPFR header version 3.1.3 differs from library version 3.1.4.
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring nonexistent directory "/usr/lib/gcc/arm-none-eabi/4.9.3/../../../arm-none-eabi/sys-include"
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/lib/gcc/arm-none-eabi/4.9.3/include
+ /usr/lib/gcc/arm-none-eabi/4.9.3/include-fixed
+ /usr/lib/gcc/arm-none-eabi/4.9.3/../../../arm-none-eabi/include
+End of search list.
+GNU C (15:4.9.3+svn231177-1) version 4.9.3 20150529 (prerelease) (arm-none-eabi)
+	compiled by GNU C version 5.2.1 20151129, GMP version 6.1.0, MPFR version 3.1.3, MPC version 1.0.3
+warning: MPFR header version 3.1.3 differs from library version 3.1.4.
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: f01f68389e85c5175dddde1daf56ada2
+COLLECT_GCC_OPTIONS='-v' '-mcpu=arm7tdmi'
+ /usr/lib/gcc/arm-none-eabi/4.9.3/../../../arm-none-eabi/bin/as -v -mcpu=arm7tdmi -meabi=5 -o /tmp/ccuTomHC.o /tmp/ccjKdlfM.s
+GNU assembler version 2.26 (arm-none-eabi) using BFD version (2.26-4ubuntu1+8) 2.26
+COMPILER_PATH=/usr/lib/gcc/arm-none-eabi/4.9.3/:/usr/lib/gcc/arm-none-eabi/4.9.3/:/usr/lib/gcc/arm-none-eabi/:/usr/lib/gcc/arm-none-eabi/4.9.3/:/usr/lib/gcc/arm-none-eabi/:/usr/lib/gcc/arm-none-eabi/4.9.3/../../../arm-none-eabi/bin/
+LIBRARY_PATH=/usr/lib/gcc/arm-none-eabi/4.9.3/:/usr/lib/gcc/arm-none-eabi/4.9.3/../../../arm-none-eabi/lib/
+COLLECT_GCC_OPTIONS='-v' '-mcpu=arm7tdmi'
+ /usr/lib/gcc/arm-none-eabi/4.9.3/collect2 -plugin /usr/lib/gcc/arm-none-eabi/4.9.3/liblto_plugin.so -plugin-opt=/usr/lib/gcc/arm-none-eabi/4.9.3/lto-wrapper -plugin-opt=-fresolution=/tmp/ccl1cdat.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -X /usr/lib/gcc/arm-none-eabi/4.9.3/crti.o /usr/lib/gcc/arm-none-eabi/4.9.3/crtbegin.o /usr/lib/gcc/arm-none-eabi/4.9.3/../../../arm-none-eabi/lib/crt0.o -L/usr/lib/gcc/arm-none-eabi/4.9.3 -L/usr/lib/gcc/arm-none-eabi/4.9.3/../../../arm-none-eabi/lib /tmp/ccuTomHC.o --start-group -lgcc -lc --end-group /usr/lib/gcc/arm-none-eabi/4.9.3/crtend.o /usr/lib/gcc/arm-none-eabi/4.9.3/crtn.o
+/usr/lib/gcc/arm-none-eabi/4.9.3/../../../arm-none-eabi/lib/libc.a(lib_a-exit.o): In function `exit':
+/build/newlib-5zwpxE/newlib-2.2.0+git20150830.5a3d536/build/arm-none-eabi/newlib/libc/stdlib/../../../../../newlib/libc/stdlib/exit.c:70: undefined reference to `_exit'
+/usr/lib/gcc/arm-none-eabi/4.9.3/../../../arm-none-eabi/lib/libc.a(lib_a-sbrkr.o): In function `_sbrk_r':
+/build/newlib-5zwpxE/newlib-2.2.0+git20150830.5a3d536/build/arm-none-eabi/newlib/libc/reent/../../../../../newlib/libc/reent/sbrkr.c:58: undefined reference to `_sbrk'
+collect2: error: ld returned 1 exit status
