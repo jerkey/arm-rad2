@@ -1,3 +1,5 @@
+#include "aduc7060.h"
+
 /************************************************************************************************
  This program expects a voltage between 0 and 1.20V to be connected differentially to AIN3/AIN2.
  It will measure the voltage between AIN3 (pin 8) as - and AIN2 (pin 9) as + and send the
@@ -64,6 +66,16 @@ unsigned long threshold = 0x185000;  // ADC value above which indicates an event
 int capacitorDuration = 5000;  // duration to clear capacitor (empirically 50000)
 // 50000 duration corresponds to 53 milliseconds
 
+int strlen(const char *s)
+{
+	int count = 0;
+
+	while (*s++)
+		count++;
+
+	return count;
+}
+
 int main(void)
 {		
 	POWKEY1 = 0x1;
@@ -123,7 +135,7 @@ void sendPacket(long whattosend)
 
 void sendText(long whattosend)
 {
-			sprintf((char*)szTemp, "x%07.7LX\r\n",whattosend );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
+//			sprintf((char*)szTemp, "x%07.7LX\r\n",whattosend );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
 			nLen = strlen((char*)szTemp);
 			if (nLen <64)	for ( i = 0 ; i < nLen ; i++ ) sendChar(szTemp[i]);;
       delay(1000); // breather
@@ -185,7 +197,7 @@ void fillBuf() {  // send a byte if there's one to send
 				COMTX = sendBuf[sendBufUartIndex++];  // send the next char and ++ the index
 				sendBufUartIndex %= sendBufSize; // wrap buffer index if needed
 }
-void IRQ_Handler(void) __attribute__((interrupt("IRQ")))
+ __attribute__((interrupt("IRQ"))) void IRQ_Handler(void)
 {
 	volatile unsigned long IRQSTATUS = IRQSTA;	   					// Read off IRQSTA register
 	if ((IRQSTATUS & BIT11) == BIT11)		//UART interrupt source
@@ -219,7 +231,7 @@ void SystemZeroCalibration(void)
 {
 	
 	ucWaitForUart = 1;
-	sprintf ( (char*)szTemp, "Set Zero Scale Voltage - Press return when ready \r\n");                         
+//	sprintf ( (char*)szTemp, "Set Zero Scale Voltage - Press return when ready \r\n");                         
 	nLen = strlen((char*)szTemp);
  	if (nLen <64)
 		 	SendString();
@@ -232,7 +244,7 @@ void SystemZeroCalibration(void)
 void SystemFullCalibration(void)
 {
 	ucWaitForUart = 1;
-	sprintf ( (char*)szTemp, "Set Full Scale Voltage (0.0375) - Press return when ready \r\n");                         
+//	sprintf ( (char*)szTemp, "Set Full Scale Voltage (0.0375) - Press return when ready \r\n");                         
 	nLen = strlen((char*)szTemp);
  	if (nLen <64)
 		 	SendString();

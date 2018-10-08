@@ -8,14 +8,14 @@ tyVctHndlr    UNDEF   = (tyVctHndlr)0x0;
 tyVctHndlr    PABORT  = (tyVctHndlr)0x0;
 tyVctHndlr    DABORT  = (tyVctHndlr)0x0;
 
-void	IRQ_Handler   (void) __attribute__((interrupt("IRQ")));
-void	SWI_Handler   (void) __attribute__((interrupt("SWI")));
-void	FIQ_Handler   (void) __attribute__((interrupt("FIQ")));
-void	Undef_Handler (void) __attribute__((interrupt("UNDEF")));
-void	PAbt_Handler  (void) __attribute__((interrupt("ABORT")));
-void	DAbt_Handler  (void) __attribute__((interrupt("ABORT")));
+__attribute__((interrupt("IRQ"))) void IRQ_Handler(void);
+__attribute__((interrupt("SWI"))) void SWI_Handler(void);
+__attribute__((interrupt("FIQ"))) void FIQ_Handler(void);
+__attribute__((interrupt("UNDEF"))) void Undef_Handler(void);
+__attribute__((interrupt("ABORT"))) void PAbt_Handler(void);
+__attribute__((interrupt("ABORT"))) void DAbt_Handler(void);
 
-/*void	IRQ_Handler(void) __attribute__((interrupt("IRQ")))
+/*__attribute__((interrupt("IRQ"))) void IRQ_Handler(void)
 {
 	if ( *IRQ !=0x00)
 	{
@@ -23,7 +23,7 @@ void	DAbt_Handler  (void) __attribute__((interrupt("ABORT")));
 	}
 }*/
 
-void	FIQ_Handler(void) __attribute__((interrupt("FIQ")))
+__attribute__((interrupt("FIQ"))) void FIQ_Handler(void)
 {
 	if ( *FIQ !=0x00)
 	{
@@ -31,7 +31,7 @@ void	FIQ_Handler(void) __attribute__((interrupt("FIQ")))
 	}
 }
 
-void	SWI_Handler(void) __attribute__((interrupt("SWI")))
+__attribute__((interrupt("SWI"))) void SWI_Handler(void)
 {
 	if ( *SWI !=0x00)
 	{
@@ -39,7 +39,7 @@ void	SWI_Handler(void) __attribute__((interrupt("SWI")))
 	}
 }
 
-void	Undef_Handler(void)__attribute__((interrupt("UNDEF"))) 
+__attribute__((interrupt("UNDEF"))) void Undef_Handler(void) 
 {
 	if ( *UNDEF !=0x00)
 	{
@@ -47,7 +47,7 @@ void	Undef_Handler(void)__attribute__((interrupt("UNDEF")))
 	}
 }
 
-void	PAbt_Handler(void) __attribute__((interrupt("ABORT")))
+__attribute__((interrupt("ABORT"))) void PAbt_Handler(void)
 {
 	if ( *PABORT !=0x00)
 	{
@@ -55,7 +55,7 @@ void	PAbt_Handler(void) __attribute__((interrupt("ABORT")))
 	}
 }
 
-void	DAbt_Handler(void) __attribute__((interrupt("ABORT")))
+__attribute__((interrupt("ABORT"))) void DAbt_Handler(void)
 {
 	if ( *DABORT !=0x00)
 	{
