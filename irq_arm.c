@@ -8,14 +8,14 @@ tyVctHndlr    UNDEF   = (tyVctHndlr)0x0;
 tyVctHndlr    PABORT  = (tyVctHndlr)0x0;
 tyVctHndlr    DABORT  = (tyVctHndlr)0x0;
 
-void	IRQ_Handler   (void) __irq;
-void	SWI_Handler   (void) __irq;
-void	FIQ_Handler   (void) __irq;
-void	Undef_Handler (void) __irq;
-void	PAbt_Handler  (void) __irq;
-void	DAbt_Handler  (void) __irq;
+void	IRQ_Handler   (void) __attribute__((interrupt("IRQ")));
+void	SWI_Handler   (void) __attribute__((interrupt("SWI")));
+void	FIQ_Handler   (void) __attribute__((interrupt("FIQ")));
+void	Undef_Handler (void) __attribute__((interrupt("UNDEF")));
+void	PAbt_Handler  (void) __attribute__((interrupt("ABORT")));
+void	DAbt_Handler  (void) __attribute__((interrupt("ABORT")));
 
-/*void	IRQ_Handler(void) __irq
+/*void	IRQ_Handler(void) __attribute__((interrupt("IRQ")))
 {
 	if ( *IRQ !=0x00)
 	{
@@ -23,7 +23,7 @@ void	DAbt_Handler  (void) __irq;
 	}
 }*/
 
-void	FIQ_Handler(void) __irq
+void	FIQ_Handler(void) __attribute__((interrupt("FIQ")))
 {
 	if ( *FIQ !=0x00)
 	{
@@ -31,7 +31,7 @@ void	FIQ_Handler(void) __irq
 	}
 }
 
-void	SWI_Handler(void) __irq
+void	SWI_Handler(void) __attribute__((interrupt("SWI")))
 {
 	if ( *SWI !=0x00)
 	{
@@ -39,7 +39,7 @@ void	SWI_Handler(void) __irq
 	}
 }
 
-void	Undef_Handler(void)__irq 
+void	Undef_Handler(void)__attribute__((interrupt("UNDEF"))) 
 {
 	if ( *UNDEF !=0x00)
 	{
@@ -47,7 +47,7 @@ void	Undef_Handler(void)__irq
 	}
 }
 
-void	PAbt_Handler(void) __irq
+void	PAbt_Handler(void) __attribute__((interrupt("ABORT")))
 {
 	if ( *PABORT !=0x00)
 	{
@@ -55,7 +55,7 @@ void	PAbt_Handler(void) __irq
 	}
 }
 
-void	DAbt_Handler(void) __irq
+void	DAbt_Handler(void) __attribute__((interrupt("ABORT")))
 {
 	if ( *DABORT !=0x00)
 	{
