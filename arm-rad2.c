@@ -32,7 +32,7 @@
 void clearCapacitor(int duration);
 void sendPacket(long whattosend);
 void sendText(long whattosend);
-void ADC0Init(void);						
+void ADC0Init(void);
 void UARTInit(void);
 void SendString(void);                  // Used to send strings to the UART
 void delay(int);                        // Simple delay
@@ -77,20 +77,20 @@ int strlen(const char *s)
 }
 
 int main(void)
-{		
+{
 	POWKEY1 = 0x1;
 	POWCON0 = 0x78;          // Set core to max CPU speed of 10.24Mhz
 	POWKEY2 = 0xF4;
 	UARTInit();              // Init UART
 	ADC0Init();              // Init ADC0
 	IRQEN = BIT11 + BIT10;   // Enable UART interrupt (BIT11) and ADC0 interrupt (BIT10)
-	
+
 	// bit 15 = ADC ON, 14:13 current source 00, 12 HIGHEXTREF, 11 AMP_CM, 10 unipolar, 9:6 input select,
 	// bit 5:4 reference select, 3:0 PGA gain select 0000=gain of 1.  page 45 of PDF
 	// ADC0CON = 0x8540 ;    //  ADC on, ADC2/ADC3 (differential mode), Int ref, gain = 1
 	ADC0CON = BIT15 + BIT10 + BIT8 + BIT7 + BIT4 + BIT5;  //  ADC on/config, see page 45
 	ADCMDE  = 0x81;          // ADCMDE bit 7 = fullpower, bits 2:0 = 001 continous conversion mode
-	
+
 	GP0DAT |= BIT28;  // MAKE P0.4 AN OUTPUT (page 102)
 	// GP0DAT |= BIT20;  // turn on P0.4 (pin 25) Note that this pin is inverted
 	GP0DAT &= 0xFFEFFFFF;  // turn OFF BIT20 P0.4 (pin 25)
@@ -118,7 +118,7 @@ int main(void)
 void clearCapacitor(int duration) {
 	GP0DAT |= BIT20;  // turn on P0.4 (pin 25)
 	delay(duration);
-	GP0DAT &= 0xFFEFFFFF;  // turn OFF BIT20 P0.4 (pin 25)	
+	GP0DAT &= 0xFFEFFFFF;  // turn OFF BIT20 P0.4 (pin 25)
 //	GP0DAT ^= BIT20;  // toggle off P0.4 (pin 25)
 }
 
@@ -130,8 +130,8 @@ void sendPacket(long whattosend)
 //     12345678 12345678 12345678  entire 24 bit ADC return
 //		 -------- -------- -1234567  shifted right 17 bits
 //     -------- --123456 78123456  shifted right 10 bits
-//		 ---12345 67812345 67812345  shifted right 3 bits			
-}	
+//		 ---12345 67812345 67812345  shifted right 3 bits
+}
 
 void sendText(long whattosend)
 {
@@ -144,16 +144,16 @@ void sendText(long whattosend)
 void ADC0Init()
 {
 	ADCMSKI = BIT0;						// Enable ADC0 result ready interrupt source
-  // ADCFLT = 0xFF1F;					// Chop on, Averaging, AF=63, SF=31, 4Hz					
+  // ADCFLT = 0xFF1F;					// Chop on, Averaging, AF=63, SF=31, 4Hz
 //	ADCFLT = BIT14;  // Bit 14 = RAVG2 running average /2, sample rate = 8kHz
 	ADCFLT = 22;  //		Sinc3 factor of 64, chop off, ravg2 off
-	
+
 	ADCORCR = 3;
  	ADCCFG = 0;
 	//ADC0CON = 0x8145;					// For system calibration set the gain that will be used
 										// for measurements to ensure the best calibration is achieved,
 										// In this case gain is 32 therefore Full Scale is 0.0375v
-	//SystemZeroCalibration();			// For best results use a system zero scale calibration 
+	//SystemZeroCalibration();			// For best results use a system zero scale calibration
 	//SystemFullCalibration();			// and a system full calibration instead of the self calibrations
 										// AIN -ne has to be biased using the DAC
 	ADC0CON = BIT10 + BIT15;	    	// Gain = 1, Unipolar, enable ADC0, Int Reference
@@ -177,9 +177,9 @@ void UARTInit()
 	// COMDIV2 = BIT15 + BIT11 + 21;	  // 9600 baud if COMDIV = 0x21
 	// COMDIV2 = BIT15 + BIT11 + 85;	  // 19200 baud if COMDIV = 0x10
 	COMDIV2 = BIT15 + BIT11 + 796;	  // 115200 baud if COMDIV = 0x02
-	
+
 	COMCON0 = BIT0 + BIT1 + BIT2;	// 8 data bits 2 stop bits
-	COMIEN0 = BIT0 + BIT1;	 	// Enable UART interrupts when Rx full and Tx buffer empty.	
+	COMIEN0 = BIT0 + BIT1;	 	// Enable UART interrupts when Rx full and Tx buffer empty.
 }
 void SendString (void)
 {
@@ -197,7 +197,8 @@ void fillBuf() {  // send a byte if there's one to send
 				COMTX = sendBuf[sendBufUartIndex++];  // send the next char and ++ the index
 				sendBufUartIndex %= sendBufSize; // wrap buffer index if needed
 }
- __attribute__((interrupt("IRQ"))) void IRQ_Handler(void)
+
+void main_interrupt()
 {
 	volatile unsigned long IRQSTATUS = IRQSTA;	   					// Read off IRQSTA register
 	if ((IRQSTATUS & BIT11) == BIT11)		//UART interrupt source
@@ -210,7 +211,7 @@ void fillBuf() {  // send a byte if there's one to send
 		{
 			ucComRx	= COMRX;
 			ucWaitForUart = 0;
-		} 	
+		}
 	}
 
 	if ((IRQSTATUS & BIT10) == BIT10)		//If ADC0 interrupt source
@@ -229,9 +230,9 @@ void delay (int length)
 
 void SystemZeroCalibration(void)
 {
-	
+
 	ucWaitForUart = 1;
-//	sprintf ( (char*)szTemp, "Set Zero Scale Voltage - Press return when ready \r\n");                         
+//	sprintf ( (char*)szTemp, "Set Zero Scale Voltage - Press return when ready \r\n");
 	nLen = strlen((char*)szTemp);
  	if (nLen <64)
 		 	SendString();
@@ -244,7 +245,7 @@ void SystemZeroCalibration(void)
 void SystemFullCalibration(void)
 {
 	ucWaitForUart = 1;
-//	sprintf ( (char*)szTemp, "Set Full Scale Voltage (0.0375) - Press return when ready \r\n");                         
+//	sprintf ( (char*)szTemp, "Set Full Scale Voltage (0.0375) - Press return when ready \r\n");
 	nLen = strlen((char*)szTemp);
  	if (nLen <64)
 		 	SendString();
@@ -254,4 +255,3 @@ void SystemFullCalibration(void)
 	while ((ADCSTA & BIT15) != BIT15)		// bit 15 set by adc when calibration is complete
 	{}
 }
-
