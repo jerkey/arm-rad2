@@ -31,16 +31,11 @@
 
 void clearCapacitor(int duration);
 void sendPacket(long whattosend);
-void sendText(long whattosend);
 void ADC0Init(void);
 void UARTInit(void);
-void SendString(void);                  // Used to send strings to the UART
 void delay(int);                        // Simple delay
-void SystemZeroCalibration(void);       // Calibrate using external inputs
-void SystemFullCalibration(void);
 void fillBuf(void);                     // send a byte if there's one to send
 void sendChar(char toSend);             // put a character into send buffer
-
 
 // global variable declarations....
 volatile unsigned char ucComRx = 0;            // variable that ComRx is read into in UART IRQ
@@ -98,10 +93,10 @@ int main(void)
 	while (1)
 	{
 		A2data = ADC0DAT;	// Read ADC0 instant approximation
-//		while (newADCdata == 0); // wait until new ADC data is available		
+//		while (newADCdata == 0); // wait until new ADC data is available
 //		newADCdata = 0;  // Indicate that data has been read
 		if (A2data >= threshold) {
-//			clearCapacitor(capacitorDuration);  // FOR TESTING			
+//			clearCapacitor(capacitorDuration);  // FOR TESTING
 //			delay(400000);  // FOR TESTING
 			while (newADCdata == 0); // wait until new ADC data is available
 			newADCdata = 0;  // Indicate that data has been read
@@ -131,14 +126,6 @@ void sendPacket(long whattosend)
 //		 -------- -------- -1234567  shifted right 17 bits
 //     -------- --123456 78123456  shifted right 10 bits
 //		 ---12345 67812345 67812345  shifted right 3 bits
-}
-
-void sendText(long whattosend)
-{
-//			sprintf((char*)szTemp, "x%07.7LX\r\n",whattosend );  // pad left with zeroes, 6 width, 6 precision, Long Double, HEX
-			nLen = strlen((char*)szTemp);
-			if (nLen <64)	for ( i = 0 ; i < nLen ; i++ ) sendChar(szTemp[i]);;
-      delay(1000); // breather
 }
 
 void ADC0Init()
@@ -181,10 +168,7 @@ void UARTInit()
 	COMCON0 = BIT0 + BIT1 + BIT2;	// 8 data bits 2 stop bits
 	COMIEN0 = BIT0 + BIT1;	 	// Enable UART interrupts when Rx full and Tx buffer empty.
 }
-void SendString (void)
-{
-   	for ( i = 0 ; i < nLen ; i++ ) sendChar(szTemp[i]);
-}
+
 void sendChar(char toSend)
 {
 	if (((sendBufIndex + 1) % sendBufSize) == sendBufUartIndex) return;  // buffer is full
@@ -226,32 +210,4 @@ void delay (int length)
 {
 	while (length >0)
     	length--;
-}
-
-void SystemZeroCalibration(void)
-{
-
-	ucWaitForUart = 1;
-//	sprintf ( (char*)szTemp, "Set Zero Scale Voltage - Press return when ready \r\n");
-	nLen = strlen((char*)szTemp);
- 	if (nLen <64)
-		 	SendString();
-	while (ucWaitForUart == 1)
-	{}
-	ADCMDE	= 0x96;							// ADC System Zero scale calibration
-	while ((ADCSTA & BIT15) != BIT15)		// bit 15 set by adc when calibration is complete
-	{}
-}
-void SystemFullCalibration(void)
-{
-	ucWaitForUart = 1;
-//	sprintf ( (char*)szTemp, "Set Full Scale Voltage (0.0375) - Press return when ready \r\n");
-	nLen = strlen((char*)szTemp);
- 	if (nLen <64)
-		 	SendString();
-	while (ucWaitForUart == 1)
-	{}
-	ADCMDE	= 0x97;							// ADC System Full scale calibration
-	while ((ADCSTA & BIT15) != BIT15)		// bit 15 set by adc when calibration is complete
-	{}
 }
