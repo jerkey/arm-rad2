@@ -1,5 +1,6 @@
 CC=arm-none-eabi-gcc
 LD=arm-none-eabi-ld
+ARMLSD=/home/alex/src/armlsd/armlsd
 OBJCOPY=arm-none-eabi-objcopy
 ARCHFLAGS=-mcpu=arm7tdmi
 CFLAGS=$(ARCHFLAGS) -nostdlib -nostartfiles -ffreestanding
@@ -19,6 +20,9 @@ firmware.elf: $(OBJS)
 
 firmware.hex: firmware.elf
 	$(OBJCOPY) -I elf32-littlearm -O ihex firmware.elf firmware.hex
+
+flash: firmware.hex
+	$(ARMLSD) -p /dev/ttyUSB0 -e -w firmware.hex
 
 clean:
 	rm -f $(OBJS) firmware.elf
