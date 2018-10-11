@@ -16,7 +16,7 @@
 #define SVC_Stack_Size 0x00
 #define ABT_Stack_Size 0x00
 #define FIQ_Stack_Size 0x00
-#define IRQ_Stack_Size 0x00
+#define IRQ_Stack_Size 0x400
 #define USR_Stack_Size 0x00
 
 	.section ".vectors"
@@ -36,7 +36,7 @@ _reset:
 
 Reset_Handler:
 	/* Setup stack */
-	ldr r0, =Stack_Top
+	ldr r0, =__stack_top
 
 	msr cpsr_c, #(Mode_UND | I_Bit | F_Bit)
 	mov sp, r0
@@ -63,6 +63,18 @@ Reset_Handler:
 
 	/* Set the stack limit */
 	sub sl, sp, #USR_Stack_Size
+
+	/* Copy .mdata to data */
+	ldr r0, =_rodata_end
+	ldr r1, =_data_start
+	ldr r2, =_data_size
+
+loop:	ldr r3, [r0]
+	str r3, [r1]
+	add r0, r0, #4
+	add r1, r1, #4
+	subs r2, r2, #4
+	bne loop
 
 	ldr r0, =main
 	bx r0
