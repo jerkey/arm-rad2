@@ -1,5 +1,7 @@
 ENTRY(_reset)
 
+STACK_SIZE = 0x400;
+
 MEMORY
 {
        rem		: ORIGIN = 0x0, LENGTH = 32K
@@ -32,6 +34,8 @@ SECTIONS
 	       _mdata_end = .;
 	 } >ram
 
+	 _data_size = _mdata_end - _data_start;
+
 	 _bss_begin = .;
 	 .bss : {
 	      *(.bss COMMON)
@@ -39,6 +43,20 @@ SECTIONS
 
 	 . = ALIGN(8);
 	 _bss_end = .;
+
+
+	 .noinit (NOLOAD):
+	 {
+		PROVIDE(__noinit_start = .);
+		*(.noinit*)
+		PROVIDE(__noinit_end = .);
+	 } >ram
+
+	 stack ALIGN(256) :
+	 {
+		. += STACK_SIZE;
+		PROVIDE(__stack_top = .);
+	 } >ram
 
 	 . = . + 0x100;
 	 Stack_Top = .;
